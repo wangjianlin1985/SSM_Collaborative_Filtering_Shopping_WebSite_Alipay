@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webshoprsmex.mapper.ScorerecordMapper">
+  <resultMap id="BaseResultMap" type="com.webshoprsmex.model.Scorerecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="createtime" jdbcType="VARCHAR" property="createtime" />
+  </resultMap>
+  <!--   关联结果集合 -->
+  <resultMap id="BaseResultMapJoin" type="com.webshoprsmex.model.Scorerecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="createtime" jdbcType="VARCHAR" property="createtime" />
+<!--     关联用户 -->
+    <association property="user" javaType="com.webshoprsmex.model.User">
+		<id column="u_id" jdbcType="INTEGER" property="id" />
+	    <result column="u_username" jdbcType="VARCHAR" property="username" />
+	    <result column="u_password" jdbcType="VARCHAR" property="password" />
+	    <result column="u_header" jdbcType="VARCHAR" property="header" />
+	    <result column="u_email" jdbcType="VARCHAR" property="email" />
+	    <result column="u_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+<!-- 	关联商品 -->
+	<association property="item" javaType="com.webshoprsmex.model.Item">
+		<id column="i_id" jdbcType="INTEGER" property="id" />
+	    <result column="i_itemname" jdbcType="VARCHAR" property="itemname" />
+	    <result column="i_typeid" jdbcType="INTEGER" property="typeid" />
+	    <result column="i_image" jdbcType="VARCHAR" property="image" />
+	    <result column="i_price" jdbcType="VARCHAR" property="price" />
+	    <result column="i_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, userid, itemid, score, createtime
+  </sql>
+  <!--   关联查询结果 -->
+  <sql id="Base_Column_List_Join">
+    s.*,
+   	u.id as u_id, u.username as u_username, u.password as u_password,
+   	u.header as u_header, u.email as u_email, u.createtime as u_createtime,
+	i.id as i_id, i.itemname as i_itemname, i.typeid as i_typeid,
+	i.image as i_image, i.price as i_price, i.createtime as i_createtime 
+  </sql>
+<!--   查询参数集合 -->
+  <sql id="Base_Param_List">
+    <if test="list!=null and list.size()>0">
+    	<foreach collection="list" item="param" open="" separator="" close="">
+            <if test="param[1] == '='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} = ${param[2]} 
+            	</if>
+            </if>
+            <if test="param[1] == 'like'.toString()">
+            	<if test="param[2] !=null and param[2] != ''.toString()">
+            		and ${param[0]} like '%${param[2]}%'
+            	</if>
+            </if>
+            <if test="param[1] == 'in'.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} in (${param[2]})  
+            	</if>
+            </if>
+            <if test="param[1] == '!='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} &lt;&gt; ${param[2]} 
+            	</if>
+            </if>
+       </foreach>
+    </if> 
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from scorerecord
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from scorerecord
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.webshoprsmex.model.Scorerecord">
+    insert into scorerecord (id, userid, itemid, 
+      score, createtime)
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{itemid,jdbcType=INTEGER}, 
+      #{score,jdbcType=INTEGER}, #{createtime,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webshoprsmex.model.Scorerecord">
+    insert into scorerecord
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="itemid != null">
+        itemid,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webshoprsmex.model.Scorerecord">
+    update scorerecord
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        itemid = #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webshoprsmex.model.Scorerecord">
+    update scorerecord
+    set userid = #{userid,jdbcType=INTEGER},
+      itemid = #{itemid,jdbcType=INTEGER},
+      score = #{score,jdbcType=INTEGER},
+      createtime = #{createtime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--   带参数查询 -->
+  <select id="find" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from scorerecord
+    where 1=1 
+	    <include refid="Base_Param_List" />
+    order by id desc
+  </select>
+<!--   带参数关联查询 -->
+  <select id="findJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from scorerecord s
+    left join user u on u.id = s.userid  
+    left join item i on i.id = s.itemid 
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by s.id desc
+  </select>
+<!--   带参数查询一个 -->
+  <select id="findFirst" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from scorerecord
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by id desc 
+    limit 0,1
+  </select>
+  <!--   带参数关联查询一个 -->
+  <select id="findFirstJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from scorerecord s
+    left join user u on u.id = s.userid  
+    left join item i on i.id = s.itemid 
+    where 1=1 
+    	<include refid="Base_Param_List" /> 
+    order by s.id desc 
+    limit 0,1
+  </select>
+  <!--   带参数聚合查询 -->
+  <select id="findCount" resultType="java.lang.Long">
+    select count(id) from scorerecord
+    where 1=1 
+    	<include refid="Base_Param_List" />
+  </select>
+  <!--   带参数聚合查询扩展 -->
+  <select id="findCountEx" resultType="map">
+    select count(id) as count,sum(score) as totalscore 
+    from scorerecord where itemid = #{param1}
+  	<if test="param2 gt 0">
+  		and score = #{param2}
+  	</if>
+  	group by itemid
+  </select>
+</mapper>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webshoprsmex.mapper.CartMapper">
+  <resultMap id="BaseResultMap" type="com.webshoprsmex.model.Cart">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+  <!--   关联结果集合 -->
+  <resultMap id="BaseResultMapJoin" type="com.webshoprsmex.model.Cart">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+<!--     关联用户 -->
+    <association property="user" javaType="com.webshoprsmex.model.User">
+		<id column="u_id" jdbcType="INTEGER" property="id" />
+	    <result column="u_username" jdbcType="VARCHAR" property="username" />
+	    <result column="u_password" jdbcType="VARCHAR" property="password" />
+	    <result column="u_header" jdbcType="VARCHAR" property="header" />
+	    <result column="u_email" jdbcType="VARCHAR" property="email" />
+	    <result column="u_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+<!-- 	关联商品 -->
+	<association property="item" javaType="com.webshoprsmex.model.Item">
+		<id column="i_id" jdbcType="INTEGER" property="id" />
+	    <result column="i_itemname" jdbcType="VARCHAR" property="itemname" />
+	    <result column="i_typeid" jdbcType="INTEGER" property="typeid" />
+	    <result column="i_image" jdbcType="VARCHAR" property="image" />
+	    <result column="i_price" jdbcType="VARCHAR" property="price" />
+	    <result column="i_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, userid, itemid, count
+  </sql>
+  <!--   关联查询结果 -->
+  <sql id="Base_Column_List_Join">
+    c.*,
+   	u.id as u_id, u.username as u_username, u.password as u_password,
+   	u.header as u_header, u.email as u_email, u.createtime as u_createtime,
+	i.id as i_id, i.itemname as i_itemname, i.typeid as i_typeid,
+	i.image as i_image, i.price as i_price, i.createtime as i_createtime 
+  </sql>
+<!--   查询参数集合 -->
+  <sql id="Base_Param_List">
+    <if test="list!=null and list.size()>0">
+    	<foreach collection="list" item="param" open="" separator="" close="">
+            <if test="param[1] == '='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} = ${param[2]} 
+            	</if>
+            </if>
+            <if test="param[1] == 'like'.toString()">
+            	<if test="param[2] !=null and param[2] != ''.toString()">
+            		and ${param[0]} like '%${param[2]}%'
+            	</if>
+            </if>
+            <if test="param[1] == 'in'.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} in (${param[2]})  
+            	</if>
+            </if>
+            <if test="param[1] == '!='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} &lt;&gt; ${param[2]} 
+            	</if>
+            </if>
+       </foreach>
+    </if> 
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cart
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cart
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.webshoprsmex.model.Cart">
+    insert into cart (id, userid, itemid, 
+      count)
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{itemid,jdbcType=INTEGER}, 
+      #{count,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webshoprsmex.model.Cart">
+    insert into cart
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="itemid != null">
+        itemid,
+      </if>
+      <if test="count != null">
+        count,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="count != null">
+        #{count,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webshoprsmex.model.Cart">
+    update cart
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        itemid = #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="count != null">
+        count = #{count,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webshoprsmex.model.Cart">
+    update cart
+    set userid = #{userid,jdbcType=INTEGER},
+      itemid = #{itemid,jdbcType=INTEGER},
+      count = #{count,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--   带参数查询 -->
+  <select id="find" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from cart
+    where 1=1 
+	    <include refid="Base_Param_List" />
+    order by id desc
+  </select>
+<!--   带参数关联查询 -->
+  <select id="findJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from cart c 
+    left join user u on u.id = c.userid  
+    left join item i on i.id = c.itemid 
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by c.id desc
+  </select>
+<!--   带参数查询一个 -->
+  <select id="findFirst" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from cart
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by id desc 
+    limit 0,1
+  </select>
+  <!--   带参数关联查询一个 -->
+  <select id="findFirstJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from cart c
+    left join user u on u.id = c.userid  
+    left join item i on i.id = c.itemid 
+    where 1=1 
+    	<include refid="Base_Param_List" /> 
+    order by c.id desc 
+    limit 0,1
+  </select>
+  <!--   带参数聚合查询 -->
+  <select id="findCount" resultType="java.lang.Long">
+    select count(id) from cart
+    where 1=1 
+    	<include refid="Base_Param_List" />
+  </select>
+  <!--   清空购物车 -->
+  <delete id="deleteBatch" parameterType="java.util.List">
+	delete from cart where id in
+	<foreach collection="list" item="cart" index="no" open="("
+		separator="," close=")">
+		#{cart.id}
+	</foreach>
+   </delete>
+</mapper>

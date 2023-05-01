@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webshoprsmex.mapper.ItemMapper">
+  <resultMap id="BaseResultMap" type="com.webshoprsmex.model.Item">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="itemname" jdbcType="VARCHAR" property="itemname" />
+    <result column="typeid" jdbcType="INTEGER" property="typeid" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="createtime" jdbcType="VARCHAR" property="createtime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.webshoprsmex.model.Item">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <!--   关联结果集合 -->
+  <resultMap id="BaseResultMapJoin" type="com.webshoprsmex.model.Item">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="itemname" jdbcType="VARCHAR" property="itemname" />
+    <result column="typeid" jdbcType="INTEGER" property="typeid" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="createtime" jdbcType="VARCHAR" property="createtime" />
+    <!-- 	关联商品类型 -->
+	<association property="type" javaType="com.webshoprsmex.model.Type">
+		<id column="t_id" jdbcType="INTEGER" property="id" />
+    	<result column="t_typename" jdbcType="VARCHAR" property="typename" />
+	</association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, itemname, typeid, image, price, createtime
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <!--   关联查询结果 -->
+  <sql id="Base_Column_List_Join">
+    i.*,
+    t.id as t_id, t.typename as t_typename 
+  </sql>
+<!--   查询参数集合 -->
+  <sql id="Base_Param_List">
+    <if test="list!=null and list.size()>0">
+    	<foreach collection="list" item="param" open="" separator="" close="">
+            <if test="param[1] == '='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} = ${param[2]} 
+            	</if>
+            </if>
+            <if test="param[1] == 'like'.toString()">
+            	<if test="param[2] !=null and param[2] != ''.toString()">
+            		and ${param[0]} like '%${param[2]}%'
+            	</if>
+            </if>
+            <if test="param[1] == 'in'.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} in (${param[2]})  
+            	</if>
+            </if>
+            <if test="param[1] == '!='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} &lt;&gt; ${param[2]} 
+            	</if>
+            </if>
+       </foreach>
+    </if> 
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from item
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from item
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.webshoprsmex.model.Item">
+    insert into item (id, itemname, typeid, 
+      image, price, createtime, 
+      content)
+    values (#{id,jdbcType=INTEGER}, #{itemname,jdbcType=VARCHAR}, #{typeid,jdbcType=INTEGER}, 
+      #{image,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{createtime,jdbcType=VARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webshoprsmex.model.Item">
+    insert into item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="itemname != null">
+        itemname,
+      </if>
+      <if test="typeid != null">
+        typeid,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="itemname != null">
+        #{itemname,jdbcType=VARCHAR},
+      </if>
+      <if test="typeid != null">
+        #{typeid,jdbcType=INTEGER},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webshoprsmex.model.Item">
+    update item
+    <set>
+      <if test="itemname != null">
+        itemname = #{itemname,jdbcType=VARCHAR},
+      </if>
+      <if test="typeid != null">
+        typeid = #{typeid,jdbcType=INTEGER},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.webshoprsmex.model.Item">
+    update item
+    set itemname = #{itemname,jdbcType=VARCHAR},
+      typeid = #{typeid,jdbcType=INTEGER},
+      image = #{image,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webshoprsmex.model.Item">
+    update item
+    set itemname = #{itemname,jdbcType=VARCHAR},
+      typeid = #{typeid,jdbcType=INTEGER},
+      image = #{image,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--   带参数查询 -->
+  <select id="find" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from item
+    where 1=1 
+	    <include refid="Base_Param_List" />
+    order by id desc
+  </select>
+<!--   带参数关联查询 -->
+  <select id="findJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from item i
+    left join type t on t.id = i.typeid  
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by i.id desc
+  </select>
+<!--   带参数查询一个 -->
+  <select id="findFirst" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from item
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by id desc 
+    limit 0,1
+  </select>
+  <!--   带参数关联查询一个 -->
+  <select id="findFirstJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from item i
+    left join type t on t.id = i.typeid 
+    where 1=1 
+    	<include refid="Base_Param_List" /> 
+    order by i.id desc 
+    limit 0,1
+  </select>
+  <!--   带参数聚合查询 -->
+  <select id="findCount" resultType="java.lang.Long">
+    select count(id) from item
+    where 1=1 
+    	<include refid="Base_Param_List" />
+  </select>
+  <!--   热点推荐，根据收藏数量降序推荐，带参数 -->
+  <select id="findHot" resultMap="BaseResultMap" >
+	select count(c.id),i.*  
+		from collect c 
+   		left join item i on i.id = c.itemid
+    	where 1=1 
+		<include refid="Base_Param_List" />
+		group by c.itemid order by count(c.id) desc limit 0,5
+  </select>
+  <!--   相关推荐，随机查找同类型下商品 -->
+  <select id="findByTypeid" resultMap="BaseResultMap" >
+	select i.* from item i 
+    	where i.id != #{param1}
+		and i.typeid = #{param2} 
+		order by rand() limit 0,5
+  </select>
+</mapper>

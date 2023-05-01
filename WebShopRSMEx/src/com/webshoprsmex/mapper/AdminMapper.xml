@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webshoprsmex.mapper.AdminMapper">
+  <resultMap id="BaseResultMap" type="com.webshoprsmex.model.Admin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, username, password
+  </sql>
+  <!--   查询参数集合 -->
+  <sql id="Base_Param_List">
+    <if test="list!=null and list.size()>0">
+    	<foreach collection="list" item="param" open="" separator="" close="">
+            <if test="param[1] == '='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} = ${param[2]} 
+            	</if>
+            </if>
+            <if test="param[1] == 'like'.toString()">
+            	<if test="param[2] !=null and param[2] != ''.toString()">
+            		and ${param[0]} like '%${param[2]}%'
+            	</if>
+            </if>
+            <if test="param[1] == 'in'.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} in (${param[2]})  
+            	</if>
+            </if>
+            <if test="param[1] == '!='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} &lt;&gt; ${param[2]} 
+            	</if>
+            </if>
+       </foreach>
+    </if> 
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from admin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from admin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.webshoprsmex.model.Admin">
+    insert into admin (id, username, password
+      )
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.webshoprsmex.model.Admin">
+    insert into admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webshoprsmex.model.Admin">
+    update admin
+    <set>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webshoprsmex.model.Admin">
+    update admin
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--   带参数查询 -->
+  <select id="find" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from admin
+    where 1=1 
+	    <include refid="Base_Param_List" />
+    order by id desc
+  </select>
+  <!--   带参数查询一个 -->
+  <select id="findFirst" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from admin
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by id desc 
+    limit 0,1
+  </select>
+  <!--   带参数聚合查询 -->
+  <select id="findCount" resultType="java.lang.Long">
+    select count(id) from admin
+    where 1=1 
+    	<include refid="Base_Param_List" />
+  </select>
+</mapper>

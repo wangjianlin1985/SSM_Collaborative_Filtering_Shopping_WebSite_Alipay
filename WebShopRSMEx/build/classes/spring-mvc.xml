@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+	<!-- 配置Controller扫描 -->
+	<context:component-scan base-package="com.webshoprsmex.controller" />
+	
+	<!-- 配置注解驱动 -->
+	<mvc:annotation-driven />
+	
+	<!-- 对静态资源放行  -->
+	<mvc:resources location="/css/" mapping="/css/**"/>
+	<mvc:resources location="/static/" mapping="/static/**"/>
+	<mvc:resources location="/js/" mapping="/js/**"/>
+	<mvc:resources location="/fonts/" mapping="/font/**"/>
+	<mvc:resources location="/layer/" mapping="/layer/**"/>
+	<mvc:resources location="/webuploader/" mapping="/webuploader/**"/>
+	<mvc:resources location="/img/" mapping="/img/**"/>
+	<mvc:resources location="/images/" mapping="/images/**"/>
+	<mvc:resources location="/ueditor/" mapping="/ueditor/**"/>
+	
+	<!-- 拦截器配置，拦截顺序：先执行后定义的，排在第一位的最后执行。-->
+	<mvc:interceptors>
+<!-- 		权限验证拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="com.webshoprsmex.interceptor.AuthInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!-- 配置视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 前缀 -->
+		<property name="prefix" value="/WEB-INF/view/" />
+		<!-- 后缀 -->
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 上传文件拦截，设置最大上传文件大小   10M=10*1024*1024(B)=10485760 bytes -->  
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+		<!-- 设置默认编码 -->
+		<property name="defaultEncoding" value="utf-8"></property>
+		<!-- 上传文件总的大小最大为50M-->
+		<property name="maxUploadSize" value="52424400"></property>
+	</bean>
+	
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	<bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean> 
+	
+	<!-- spring项目启动监听器 -->
+	<bean id="initAppListener" class="com.webshoprsmex.listener.InitAppListener">
+	</bean>
+	
+</beans>
+	

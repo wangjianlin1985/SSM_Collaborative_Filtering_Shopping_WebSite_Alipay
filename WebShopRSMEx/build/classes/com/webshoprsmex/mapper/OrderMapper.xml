@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webshoprsmex.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.webshoprsmex.model.Order">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="totalprice" jdbcType="VARCHAR" property="totalprice" />
+    <result column="bankname" jdbcType="VARCHAR" property="bankname" />
+    <result column="banknum" jdbcType="VARCHAR" property="banknum" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="createtime" jdbcType="VARCHAR" property="createtime" />
+    <result column="paytime" jdbcType="VARCHAR" property="paytime" />
+    <result column="sendtime" jdbcType="VARCHAR" property="sendtime" />
+    <result column="receivetime" jdbcType="VARCHAR" property="receivetime" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+  </resultMap>
+  <!--   关联结果集合 -->
+  <resultMap id="BaseResultMapJoin" type="com.webshoprsmex.model.Order">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="totalprice" jdbcType="VARCHAR" property="totalprice" />
+    <result column="bankname" jdbcType="VARCHAR" property="bankname" />
+    <result column="banknum" jdbcType="VARCHAR" property="banknum" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="createtime" jdbcType="VARCHAR" property="createtime" />
+    <result column="paytime" jdbcType="VARCHAR" property="paytime" />
+    <result column="sendtime" jdbcType="VARCHAR" property="sendtime" />
+    <result column="receivetime" jdbcType="VARCHAR" property="receivetime" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+<!--     关联用户 -->
+    <association property="user" javaType="com.webshoprsmex.model.User">
+		<id column="u_id" jdbcType="INTEGER" property="id" />
+	    <result column="u_username" jdbcType="VARCHAR" property="username" />
+	    <result column="u_password" jdbcType="VARCHAR" property="password" />
+	    <result column="u_header" jdbcType="VARCHAR" property="header" />
+	    <result column="u_email" jdbcType="VARCHAR" property="email" />
+	    <result column="u_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, userid, totalprice, bankname, banknum, phone, address, createtime, paytime, sendtime, 
+    receivetime, state
+  </sql>
+  <!--   关联查询结果 -->
+  <sql id="Base_Column_List_Join">
+    o.*,
+   	u.id as u_id, u.username as u_username, u.password as u_password,
+   	u.header as u_header, u.email as u_email, u.createtime as u_createtime
+  </sql>
+<!--   查询参数集合 -->
+  <sql id="Base_Param_List">
+    <if test="list!=null and list.size()>0">
+    	<foreach collection="list" item="param" open="" separator="" close="">
+            <if test="param[1] == '='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} = ${param[2]} 
+            	</if>
+            </if>
+            <if test="param[1] == 'like'.toString()">
+            	<if test="param[2] !=null and param[2] != ''.toString()">
+            		and ${param[0]} like '%${param[2]}%'
+            	</if>
+            </if>
+            <if test="param[1] == 'in'.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} in (${param[2]})  
+            	</if>
+            </if>
+            <if test="param[1] == '!='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} &lt;&gt; ${param[2]} 
+            	</if>
+            </if>
+       </foreach>
+    </if> 
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from `order`
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from `order`
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.webshoprsmex.model.Order">
+    insert into `order` (id, userid, totalprice, 
+      bankname, banknum, phone, 
+      address, createtime, paytime, 
+      sendtime, receivetime, state
+      )
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{totalprice,jdbcType=VARCHAR}, 
+      #{bankname,jdbcType=VARCHAR}, #{banknum,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{createtime,jdbcType=VARCHAR}, #{paytime,jdbcType=VARCHAR}, 
+      #{sendtime,jdbcType=VARCHAR}, #{receivetime,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.webshoprsmex.model.Order" useGeneratedKeys="true" keyProperty="id">
+    insert into `order` 
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="totalprice != null">
+        totalprice,
+      </if>
+      <if test="bankname != null">
+        bankname,
+      </if>
+      <if test="banknum != null">
+        banknum,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="paytime != null">
+        paytime,
+      </if>
+      <if test="sendtime != null">
+        sendtime,
+      </if>
+      <if test="receivetime != null">
+        receivetime,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="totalprice != null">
+        #{totalprice,jdbcType=VARCHAR},
+      </if>
+      <if test="bankname != null">
+        #{bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="banknum != null">
+        #{banknum,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="paytime != null">
+        #{paytime,jdbcType=VARCHAR},
+      </if>
+      <if test="sendtime != null">
+        #{sendtime,jdbcType=VARCHAR},
+      </if>
+      <if test="receivetime != null">
+        #{receivetime,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webshoprsmex.model.Order">
+    update `order`
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="totalprice != null">
+        totalprice = #{totalprice,jdbcType=VARCHAR},
+      </if>
+      <if test="bankname != null">
+        bankname = #{bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="banknum != null">
+        banknum = #{banknum,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="paytime != null">
+        paytime = #{paytime,jdbcType=VARCHAR},
+      </if>
+      <if test="sendtime != null">
+        sendtime = #{sendtime,jdbcType=VARCHAR},
+      </if>
+      <if test="receivetime != null">
+        receivetime = #{receivetime,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webshoprsmex.model.Order">
+    update `order`
+    set userid = #{userid,jdbcType=INTEGER},
+      totalprice = #{totalprice,jdbcType=VARCHAR},
+      bankname = #{bankname,jdbcType=VARCHAR},
+      banknum = #{banknum,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=VARCHAR},
+      paytime = #{paytime,jdbcType=VARCHAR},
+      sendtime = #{sendtime,jdbcType=VARCHAR},
+      receivetime = #{receivetime,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--   带参数查询 -->
+  <select id="find" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from `order` 
+    where 1=1 
+	    <include refid="Base_Param_List" />
+    order by id desc
+  </select>
+<!--   带参数关联查询 -->
+  <select id="findJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from `order` o 
+    left join user u on u.id = o.userid  
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by o.id desc
+  </select>
+<!--   带参数查询一个 -->
+  <select id="findFirst" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from `order` 
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by id desc 
+    limit 0,1
+  </select>
+  <!--   带参数关联查询一个 -->
+  <select id="findFirstJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from `order` o 
+    left join user u on u.id = o.userid  
+    where 1=1 
+    	<include refid="Base_Param_List" /> 
+    order by o.id desc 
+    limit 0,1
+  </select>
+  <!--   带参数聚合查询 -->
+  <select id="findCount" resultType="java.lang.Long">
+    select count(id) from `order`
+    where 1=1 
+    	<include refid="Base_Param_List" />
+  </select>
+</mapper>

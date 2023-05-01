@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webshoprsmex.mapper.OrderitemMapper">
+  <resultMap id="BaseResultMap" type="com.webshoprsmex.model.Orderitem">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="orderid" jdbcType="INTEGER" property="orderid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+    <result column="totalprice" jdbcType="VARCHAR" property="totalprice" />
+  </resultMap>
+  <!--   关联结果集合 -->
+  <resultMap id="BaseResultMapJoin" type="com.webshoprsmex.model.Orderitem">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="orderid" jdbcType="INTEGER" property="orderid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+    <result column="totalprice" jdbcType="VARCHAR" property="totalprice" />
+<!--     关联用户 -->
+    <association property="user" javaType="com.webshoprsmex.model.User">
+		<id column="u_id" jdbcType="INTEGER" property="id" />
+	    <result column="u_username" jdbcType="VARCHAR" property="username" />
+	    <result column="u_password" jdbcType="VARCHAR" property="password" />
+	    <result column="u_header" jdbcType="VARCHAR" property="header" />
+	    <result column="u_email" jdbcType="VARCHAR" property="email" />
+	    <result column="u_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+<!-- 	关联商品 -->
+	<association property="item" javaType="com.webshoprsmex.model.Item">
+		<id column="i_id" jdbcType="INTEGER" property="id" />
+	    <result column="i_itemname" jdbcType="VARCHAR" property="itemname" />
+	    <result column="i_typeid" jdbcType="INTEGER" property="typeid" />
+	    <result column="i_image" jdbcType="VARCHAR" property="image" />
+	    <result column="i_price" jdbcType="VARCHAR" property="price" />
+	    <result column="i_createtime" jdbcType="VARCHAR" property="createtime" />
+	</association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, userid, orderid, itemid, price, count, totalprice
+  </sql>
+  <!--   关联查询结果 -->
+  <sql id="Base_Column_List_Join">
+    oi.*,
+   	u.id as u_id, u.username as u_username, u.password as u_password,
+   	u.header as u_header, u.email as u_email, u.createtime as u_createtime,
+	i.id as i_id, i.itemname as i_itemname, i.typeid as i_typeid,
+	i.image as i_image, i.price as i_price, i.createtime as i_createtime 
+  </sql>
+<!--   查询参数集合 -->
+  <sql id="Base_Param_List">
+    <if test="list!=null and list.size()>0">
+    	<foreach collection="list" item="param" open="" separator="" close="">
+            <if test="param[1] == '='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} = ${param[2]} 
+            	</if>
+            </if>
+            <if test="param[1] == 'like'.toString()">
+            	<if test="param[2] !=null and param[2] != ''.toString()">
+            		and ${param[0]} like '%${param[2]}%'
+            	</if>
+            </if>
+            <if test="param[1] == 'in'.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} in (${param[2]})  
+            	</if>
+            </if>
+            <if test="param[1] == '!='.toString()">
+            	<if test="param[2]!=null and param[2]!=''.toString()">
+            		and ${param[0]} &lt;&gt; ${param[2]} 
+            	</if>
+            </if>
+       </foreach>
+    </if> 
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from orderitem
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from orderitem
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.webshoprsmex.model.Orderitem">
+    insert into orderitem (id, userid, orderid, 
+      itemid, price, count, 
+      totalprice)
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{orderid,jdbcType=INTEGER}, 
+      #{itemid,jdbcType=INTEGER}, #{price,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER}, 
+      #{totalprice,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webshoprsmex.model.Orderitem">
+    insert into orderitem
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="orderid != null">
+        orderid,
+      </if>
+      <if test="itemid != null">
+        itemid,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="count != null">
+        count,
+      </if>
+      <if test="totalprice != null">
+        totalprice,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="orderid != null">
+        #{orderid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null">
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="totalprice != null">
+        #{totalprice,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webshoprsmex.model.Orderitem">
+    update orderitem
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="orderid != null">
+        orderid = #{orderid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        itemid = #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null">
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="totalprice != null">
+        totalprice = #{totalprice,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webshoprsmex.model.Orderitem">
+    update orderitem
+    set userid = #{userid,jdbcType=INTEGER},
+      orderid = #{orderid,jdbcType=INTEGER},
+      itemid = #{itemid,jdbcType=INTEGER},
+      price = #{price,jdbcType=VARCHAR},
+      count = #{count,jdbcType=INTEGER},
+      totalprice = #{totalprice,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--   带参数查询 -->
+  <select id="find" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from orderitem
+    where 1=1 
+	    <include refid="Base_Param_List" />
+    order by id desc
+  </select>
+<!--   带参数关联查询 -->
+  <select id="findJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from orderitem oi 
+    left join user u on u.id = oi.userid  
+    left join item i on i.id = oi.itemid 
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by oi.id desc
+  </select>
+<!--   带参数查询一个 -->
+  <select id="findFirst" resultMap="BaseResultMap" >
+    select 
+    	<include refid="Base_Column_List" />
+    from orderitem
+    where 1=1 
+    	<include refid="Base_Param_List" />
+    order by id desc 
+    limit 0,1
+  </select>
+  <!--   带参数关联查询一个 -->
+  <select id="findFirstJoin" resultMap="BaseResultMapJoin" >
+    select 
+    	<include refid="Base_Column_List_Join" /> 
+    from orderitem oi 
+    left join user u on u.id = oi.userid  
+    left join item i on i.id = oi.itemid 
+    where 1=1 
+    	<include refid="Base_Param_List" /> 
+    order by oi.id desc 
+    limit 0,1
+  </select>
+  <!--   带参数聚合查询 -->
+  <select id="findCount" resultType="java.lang.Long">
+    select count(id) from orderitem
+    where 1=1 
+    	<include refid="Base_Param_List" />
+  </select>
+<!--   统计每种商品类型下的销量 -->
+  <select id="findTypeidCount" resultType="java.util.LinkedHashMap">
+		SELECT
+			count(p.typeid) AS typecount,
+			sum(o.count) AS count,
+			p.typeid,
+			t.typename
+		FROM
+			orderitem o
+		LEFT JOIN item p ON o.itemid = p.id
+		LEFT JOIN type t ON t.id = p.typeid
+		GROUP BY
+			p.typeid
+  </select>
+<!--   统计近七天营业额 -->
+  <select id="findOrderPrice" resultType="java.util.LinkedHashMap">
+	  SELECT
+			STR_TO_DATE(o.createtime, '%Y-%m-%d') AS ordertime,
+			ROUND(SUM(oi.totalprice),2) AS price
+		FROM
+			`order` o
+		LEFT JOIN orderitem oi ON o.id = oi.orderid
+		WHERE
+			STR_TO_DATE(
+				o.createtime,
+				'%Y-%m-%d %H:%i:%s'
+			) BETWEEN date_sub(now(), INTERVAL 7 DAY)
+		AND now()
+		GROUP BY
+			STR_TO_DATE(o.createtime, '%Y-%m-%d')
+  </select>
+</mapper>
